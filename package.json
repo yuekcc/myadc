@@ -1,0 +1,51 @@
+{
+  "name": "myadc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.mjs",
+    "build": "tsup src/index.js --format esm,cjs --target node18 --minify --shims"
+  },
+  "author": "no_name",
+  "license": "MIT",
+  "prettier": {
+    "arrowParens": "avoid",
+    "endOfLine": "auto",
+    "printWidth": 120,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "eslintConfig": {
+    "env": {
+      "es2021": true,
+      "commonjs": true,
+      "browser": true,
+      "node": true,
+      "worker": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "plugins": [
+      "prettier"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.0.0",
+    "tsup": "^6.6.2"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "h3": "^1.4.0"
+  }
+}
