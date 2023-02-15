@@ -48,22 +48,37 @@ function apis() {
   };
 }
 
-function initVm(code) {
-  return event => {
-    const ctx = vm.createContext({ event, ...apis() });
-    const script = new vm.Script(code);
-    return script.runInNewContext(ctx);
-  };
-}
-
 function loadCode(appId, serviceName) {
   const jsFile = path.join(__dirname, '../app', appId, serviceName + '.js');
   return fs.readFile(jsFile, 'utf-8');
 }
 
-export async function invokeService(appId, serviceName, event) {
-  const code = await loadCode(appId, serviceName);
+class ServiceEngine {
+  constructor() {
+    this._cache = {};
+  }
 
-  const run = initVm(code);
-  run(event);
+  async init(appId, serviceName) {
+    const cacheKey = `${appId}/${serviceName}`;
+    let cached = this._cache[cacheKey];
+    if (!cached) {
+      const code = await loadCode(appId, serviceName);
+      const script = new vm.Script(code);
+      this._cache[cacheKey] = script;
+      cached = this._cache[cacheKey];
+    }
+
+    return ctx => {
+      const ctx_ = vm.createContext({ ...apis(), ...ctx });
+      cached.runInNewContext(ctx_);
+      cached = null;
+    };
+  }
+}
+
+const SERVICE_ENGINE = new ServiceEngine();
+
+export async function invokeService(appId, serviceName, event) {
+  const service = await SERVICE_ENGINE.init(appId, serviceName);
+  service({ event });
 }
